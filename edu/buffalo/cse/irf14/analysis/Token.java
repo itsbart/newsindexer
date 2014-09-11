@@ -23,6 +23,18 @@ public class Token {
 	 * to suit your class definition and data structure needs.
 	 * @param text
 	 */
+	
+	//default constructor
+	public Token(){	}
+	
+	//parametrized constructor
+	public Token(String token){
+		termText = token;
+		termBuffer = (termText != null) ? termText.toCharArray() : null;
+	}
+
+	
+	
 	protected void setTermText(String text) {
 		termText = text;
 		termBuffer = (termText != null) ? termText.toCharArray() : null;
@@ -67,6 +79,20 @@ public class Token {
 	 */
 	protected void merge(Token...tokens) {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		
+		if(tokens != null) {
+			
+			//include original token
+			String merged = termText;
+
+			for (Token token : tokens) {
+				merged += token.toString() + " ";
+			}
+		
+			termText = merged.trim(); //no trailing space
+			termBuffer = termText.toCharArray();
+		}
+		
 	}
 	
 	/**
@@ -84,6 +110,8 @@ public class Token {
 	@Override
 	public String toString() {
 		//TODO: YOU MUST IMPLEMENT THIS METHOD
-		return null;
+		
+		//for now
+		return termText;
 	}
 }

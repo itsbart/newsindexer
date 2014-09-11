@@ -3,6 +3,7 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -13,6 +14,16 @@ import java.util.Iterator;
  */
 public class TokenStream implements Iterator<Token>{
 	
+	private ArrayList<Token> _tokenArray;
+	private int _current;
+	
+	
+	public TokenStream(ArrayList<Token> tokenArray){
+		this._tokenArray = tokenArray;
+		this._current = 0;
+	}
+	
+	
 	/**
 	 * Method that checks if there is any Token left in the stream
 	 * with regards to the current pointer.
@@ -22,7 +33,7 @@ public class TokenStream implements Iterator<Token>{
 	@Override
 	public boolean hasNext() {
 		// TODO YOU MUST IMPLEMENT THIS
-		return false;
+		return (_current < _tokenArray.size()) ? true : false;
 	}
 
 	/**
@@ -34,7 +45,14 @@ public class TokenStream implements Iterator<Token>{
 	 */
 	@Override
 	public Token next() {
+		
 		// TODO YOU MUST IMPLEMENT THIS
+		if(_tokenArray.get(_current) != null){
+			Token result = _tokenArray.get(_current);
+			_current++;
+			return result;
+		}
+		
 		return null;
 	}
 	
@@ -48,6 +66,9 @@ public class TokenStream implements Iterator<Token>{
 	public void remove() {
 		// TODO YOU MUST IMPLEMENT THIS
 		
+		int index = (_current == 0) ? 0 : _current - 1; //index to be deleted
+		_tokenArray.remove(index);	
+		_current = (_current == 0) ? 0 : _current--; //adjust current pointer, everything shifted to left
 	}
 	
 	/**
@@ -57,7 +78,18 @@ public class TokenStream implements Iterator<Token>{
 	 */
 	public void reset() {
 		//TODO : YOU MUST IMPLEMENT THIS
+		_current = 0;
 	}
+	
+	/**
+	 * Helper method (getter) to retrieve ArrayList from TokenStream
+	 *
+	 */
+	
+	public ArrayList<Token> getTokenArray() {
+		return this._tokenArray;
+	}
+	
 	
 	/**
 	 * Method to append the given TokenStream to the end of the current stream
@@ -70,6 +102,10 @@ public class TokenStream implements Iterator<Token>{
 	 */
 	public void append(TokenStream stream) {
 		//TODO : YOU MUST IMPLEMENT THIS
+		
+		if(stream.getTokenArray() != null){
+			_tokenArray.addAll(stream.getTokenArray());
+		}
 	}
 	
 }

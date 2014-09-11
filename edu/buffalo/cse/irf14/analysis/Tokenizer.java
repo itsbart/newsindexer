@@ -3,6 +3,9 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
+
+
 /**
  * @author nikhillo
  * Class that converts a given string into a {@link TokenStream} instance
@@ -11,8 +14,11 @@ public class Tokenizer {
 	/**
 	 * Default constructor. Assumes tokens are whitespace delimited
 	 */
+	private String _delim;
+	
 	public Tokenizer() {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
+
 	}
 	
 	/**
@@ -21,6 +27,8 @@ public class Tokenizer {
 	 */
 	public Tokenizer(String delim) {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		
+		_delim = delim;
 	}
 	
 	/**
@@ -39,6 +47,22 @@ public class Tokenizer {
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
-		return null;
+		
+		if(str != null) {
+			String[] splitted = str.split(_delim);
+			if(splitted != null && splitted.length > 0) {
+				ArrayList<Token> tokens = new ArrayList<Token>();
+				for(String element : splitted){
+					tokens.add(new Token(element.trim()));
+				}
+				return new TokenStream(tokens);
+			}else{
+				throw new TokenizerException();
+			}
+			
+		}else{
+			throw new TokenizerException();
+		}
+		
 	}
 }

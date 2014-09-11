@@ -39,7 +39,25 @@ public class ParserTest {
 		BASE_USER_DIR + File.separatorChar + "acq" + File.separatorChar + "0000005",
 		BASE_USER_DIR + File.separatorChar + "dfl" + File.separatorChar + "0001973", 
 		BASE_USER_DIR + File.separatorChar + "gold" + File.separatorChar + "0009544",
-		BASE_USER_DIR + File.separatorChar + "money-supply" + File.separatorChar + "0004283"};
+		BASE_USER_DIR + File.separatorChar + "money-supply" + File.separatorChar + "0004283"
+		};
+	
+	
+	//Special Case Files :
+	/**
+		acq/0008281
+		money-fx/0003705
+		unknown/0000093
+		unknown/0000072
+	*/
+	
+	private static final String special1 = 
+			BASE_USER_DIR + File.separatorChar + "unknown" + File.separatorChar + "0000093";
+	
+	private static final String special2 = 
+			BASE_USER_DIR + File.separatorChar + "unknown" + File.separatorChar + "0000072";
+	
+	
 	
 	// Document object to test with
 	private Document d = null;
@@ -95,6 +113,18 @@ public class ParserTest {
 			e.printStackTrace(); // So that debugging may be a bit easier.
 			fail("A ParserException was thrown when it should not have been thrown.");
 		}
+	}
+	
+	
+	//just testing..
+	@Test
+	public void testSpecialCase() {
+		try {
+			d = Parser.parse(special2);
+		} catch (ParserException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	private void validateTitle(Document d, int count){

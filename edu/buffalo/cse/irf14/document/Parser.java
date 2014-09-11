@@ -3,11 +3,15 @@
  */
 package edu.buffalo.cse.irf14.document;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -25,6 +29,7 @@ public class Parser {
 	public static Pattern patternFront = Pattern.compile("^<AUTHOR>\\u0020*By\\u0020*", Pattern.CASE_INSENSITIVE);
 	public static Pattern patternBack = Pattern.compile("</AUTHOR>$");
 	
+	public static Pattern pattern = Pattern.compile("^<AUTHOR>\\u0020*by\\u0020(.*)</AUTHOR>$", Pattern.CASE_INSENSITIVE);
 	
 	
  	/**
@@ -49,8 +54,7 @@ public class Parser {
 				String place = getPlace(linesFromDocument);
 				String date = getDate(linesFromDocument);
 				String content = getContent(linesFromDocument);
-				String authorName = getAuthorName(linesFromDocument);
-				String authorOrg = getAuthorOrg(linesFromDocument);
+				
 				document.setField(FieldNames.FILEID, fileId);
 				document.setField(FieldNames.CATEGORY, category);
 				document.setField(FieldNames.TITLE, title);
@@ -58,11 +62,19 @@ public class Parser {
 				document.setField(FieldNames.NEWSDATE, date);
 				document.setField(FieldNames.CONTENT, content);
 				
-				if(authorName != null) {
-					document.setField(FieldNames.AUTHOR, authorName);
-				}
-				if(authorOrg != null) {
-					document.setField(FieldNames.AUTHORORG, authorOrg);
+				
+				//Authors
+				HashMap<FieldNames, String[]> authorData  = getAuthorData(linesFromDocument);	
+				if(authorData != null){
+					if(authorData.get(FieldNames.AUTHOR) != null){
+						document.setField(FieldNames.AUTHOR, authorData.get(FieldNames.AUTHOR));
+						for(String input : authorData.get(FieldNames.AUTHOR)){
+							System.out.println(category+ "\\" + fileId + " NAME: " + input);
+						}
+					}
+					if(authorData.get(FieldNames.AUTHORORG) != null){
+						document.setField(FieldNames.AUTHORORG, authorData.get(FieldNames.AUTHORORG));
+					}
 				}
 				
 				//System.out.println(content);
@@ -74,54 +86,49 @@ public class Parser {
 		}
 	}
 	
-	/** Task: finds out Author's organization
-	 * @return author's organization
+	/** Task: Finds Authors Of the article and respective organization
+	 * @return HashMap with String Array containing names and Organization
 	 */
-	
-	private static String getAuthorOrg(ArrayList<String> linesFromDocument){
 		
-		String authorData = getAuthorData(linesFromDocument);
-		
-		if(authorData != null){
-			StringTokenizer authorTok = new StringTokenizer(authorData, ",");
-			if(authorTok.countTokens() > 1){
-				authorTok.nextToken(); //don't care
-				return authorTok.nextToken().trim();
-			}
-		}
-		return null;
-	}
-	
-	/** Task: finds out Author's name
-	 * @return author's name
-	 */
-	
-	private static String getAuthorName(ArrayList<String> linesFromDocument){
-		
-		String authorData = getAuthorData(linesFromDocument);
-		
-		if(authorData != null){
-			StringTokenizer authorTok = new StringTokenizer(authorData, ",");
-			return authorTok.nextToken();
-		}
-		return null;
-	}
-	
-	/** Task: finds out Author's name and Organization
-	 * @return author's name and organization
-	 */
-	
-	private static String getAuthorData(ArrayList<String> linesFromDocument){
+	private static HashMap<FieldNames, String[]> getAuthorData(ArrayList<String> linesFromDocument){
 		
 		String line = linesFromDocument.get(1);
 		if(line.contains("<AUTHOR>")){
-			Matcher matcher = patternFront.matcher(line);
-			String temp = matcher.replaceAll("");
+
+			Matcher m = pattern.matcher(line);
 			
-			matcher = patternBack.matcher(temp);
-			String authorInfo = matcher.replaceAll("");
-			
-			return authorInfo;
+			//check if there is a match for Author
+			if(m.find()){
+				String match = m.group(1).trim();
+				String[] authors = match.split("\\u0020and|AND\\u0020");
+				HashMap<FieldNames, String[]> results = new HashMap<FieldNames, String[]>();
+				
+				//two authors
+				if(authors.length > 1) {
+					String[] authorAndOrg = authors[1].split(",");
+					results.put(FieldNames.AUTHOR, new String[]{authors[0].trim(), authorAndOrg[0].trim()});
+					
+					//organization - if present
+					if(authorAndOrg.length > 1 && authorAndOrg[1] != null){
+						results.put(FieldNames.AUTHORORG, new String[]{authorAndOrg[1].trim()});
+					}
+					return results;
+				
+				//one author	
+				}else if(authors.length == 1){
+					String[] authorAndOrg = authors[0].split(",");
+					results.put(FieldNames.AUTHOR, new String[]{authorAndOrg[0].trim()});
+					
+					//organization - if present
+					if(authorAndOrg.length > 1 && authorAndOrg[1] != null){
+						results.put(FieldNames.AUTHORORG, new String[]{authorAndOrg[1].trim()});
+					}
+					return results;
+				}
+				
+			} else {
+				return null;
+			}
 		}
 		return null;
 	}
