@@ -3,9 +3,6 @@
  */
 package edu.buffalo.cse.irf14.document;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
