@@ -20,7 +20,6 @@ public class TokenizerTest {
 		
 		Tokenizer tok = new Tokenizer(",");
 		
-		TokenStream tokenStream = null;
 		TokenStream[] tokenStreams = new TokenStream[3];
 		int i = 0;
 		
@@ -40,19 +39,38 @@ public class TokenizerTest {
 			}
 		}
 		
+		//Correct Sizes Check
 		System.out.println("SIZE tokenStream1 : " + tokenStreams[0].getTokenArray().size());
+		assertEquals(1, tokenStreams[0].getTokenArray().size());
+		
+		
 		System.out.println("SIZE tokenStream2 : " + tokenStreams[1].getTokenArray().size());
+		assertEquals(3, tokenStreams[1].getTokenArray().size());
+		
+		
 		System.out.println("SIZE tokenStream3 : " + tokenStreams[2].getTokenArray().size());
+		assertEquals(2, tokenStreams[2].getTokenArray().size());
 	
 		//Merger
-		
 		tokenStreams[0].append(tokenStreams[1]);
 		tokenStreams[0].append(tokenStreams[2]);
+		assertEquals(6, tokenStreams[0].getTokenArray().size());
 	
-		System.out.println("SIZE tokenStream1 : " + tokenStreams[0].getTokenArray().size());
+		//Removal - ptr check
 		tokenStreams[0].remove();
-		System.out.println("SIZE tokenStream1 : " + tokenStreams[0].getTokenArray().size());
+		assertEquals(5, tokenStreams[0].getTokenArray().size());
+		
+		//getCurrent test
 		System.out.println(tokenStreams[0].next());
+		assertEquals("by the same stores which", tokenStreams[0].getCurrent().toString());
+		
+		String test = tokenStreams[0].getCurrent().toString();
+		
+		test += "DUPA";
+		
+		String test2 = tokenStreams[0].getCurrent().toString();
+		
+		
 	}
 
 }

@@ -118,7 +118,9 @@ public class TokenStream implements Iterator<Token>{
 	 */
 	public Token getCurrent() {
 		//TODO: YOU MUST IMPLEMENT THIS
-		return null;
+		
+		//returns current (or last next) token 
+		return _tokenArray.get(_current - 1);
 	}
 
 	

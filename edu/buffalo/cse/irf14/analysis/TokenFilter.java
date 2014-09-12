@@ -18,6 +18,10 @@ public abstract class TokenFilter implements Analyzer {
 	 * @param stream : The given TokenStream instance
 	 */
 	public TokenFilter(TokenStream stream) {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		
+		//reposition the iterator to the beginning
+		stream.reset();
+		
 	}
+	
 }
