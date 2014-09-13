@@ -11,6 +11,8 @@ import edu.buffalo.cse.irf14.analysis.Tokenizer;
 import edu.buffalo.cse.irf14.analysis.TokenizerException;
 
 public class TFRuleBaseTest {
+	
+	
 	public final String[] runTest(TokenFilterType type, String str) throws TokenizerException {
 		Tokenizer tkizer = new Tokenizer();
 		TokenStream tstream = tkizer.consume(str);

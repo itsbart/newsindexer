@@ -67,6 +67,21 @@ public class regexTest {
 			System.out.println(output);
 		}
 		
+		
+		String input = "camelCase";
+		Pattern pattern5 = Pattern.compile("^[a-z]+[A-Z]+.*");
+		Matcher matcher = pattern5.matcher(input);
+		
+		if(matcher.find()){
+			System.out.println("MATCH!");
+		}
+		
+		String input2 = "End.";
+		if(input2.endsWith(".")){
+			System.out.println("END OF SENTENCE!");
+		}
+				
+		
 	}
 
 }
