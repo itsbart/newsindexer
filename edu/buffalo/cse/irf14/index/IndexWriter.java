@@ -57,11 +57,8 @@ public class IndexWriter {
 	int[] ids = { 0, 0, 0, 0, 0 };
 
 	/**
-	 * 
 	 * Default constructor
-	 * 
-	 * @param indexDir
-	 *            : The root directory to be sued for indexing
+	 * @param indexDir The root directory to be sued for indexing
 	 */
 
 	public IndexWriter(String indexDir) {
@@ -77,6 +74,12 @@ public class IndexWriter {
 		termIndex = new TreeMap<String, LinkedList<Integer>>();
 	}
 
+	/**
+	 * Assigns Document Id for selected document in incremental fashion
+	 * @param Document for which we want to assign ID
+	 * @return Assigned ID
+	 */
+	
 	public int updateDocumentDictionary(Document d) {
 
 		this.documentDictionary.add(d);
@@ -95,10 +98,8 @@ public class IndexWriter {
 	 * analyzers and then indexing the results for each indexable field within
 	 * the document.
 	 * 
-	 * @param d
-	 *            : The Document to be added
-	 * @throws IndexerException
-	 *             : In case any error occurs
+	 * @param d : The Document to be added
+	 * @throws IndexerException: In case any error occurs
 	 */
 
 	public void addDocument(Document d) throws IndexerException {
@@ -129,6 +130,17 @@ public class IndexWriter {
 
 	}
 
+	/**
+	 * 
+	 * Method responsible for updating author Index.
+	 * Tokenizes authors and uses author analyzer to filter out tokens
+	 * 
+	 * @param authors: String array containing one or more authors, docID: document ID of current doc
+	 * @throws IndexerException: In case any error occurs
+	 */
+	
+	
+	
 	public void buildAuthorIndex(String[] authors, int docID)
 			throws TokenizerException {
 
@@ -156,6 +168,14 @@ public class IndexWriter {
 		}
 	}
 
+	/**
+	 * 
+	 * Method responsible for updating category Index.
+	 * 
+	 * @param cat: String array containing category, docID: document ID of current doc
+	 * @throws IndexerException: In case any error occurs
+	 */
+	
 	public void buildCategoryIndex(String[] cat, int docID)
 			throws TokenizerException {
 
@@ -177,6 +197,14 @@ public class IndexWriter {
 		}
 	}
 
+	/**
+	 * 
+	 * Method responsible for updating place Index.
+	 * Uses PlaceAnalyzer to filter out tokens.
+	 * @param Place: String array containing place, docID: document ID of current doc
+	 * @throws IndexerException: In case any error occurs
+	 */
+	
 	public void buildPlaceIndex(String[] Place, int docID)
 			throws TokenizerException {
 
@@ -195,6 +223,14 @@ public class IndexWriter {
 			return;
 		}
 	}
+	
+	/**
+	 * 
+	 * Method responsible for updating term Index.
+	 * Uses TermAnalyzer to filter out tokens into proper form.
+	 * @param Content: String array containing entire content, docID: document ID of current doc
+	 * @throws IndexerException: In case any error occurs
+	 */
 	
 	public void buildTermIndex(String[] Content, int docID) throws TokenizerException{
 		
@@ -217,6 +253,13 @@ public class IndexWriter {
 		}
 	}
 
+	/**
+	 * 
+	 * Helper method used for updating respective treeMaps
+	 * @param key: String key, value : docID, indexType: fieldName of index we want to update
+	 * @return true: operation successful false: error
+	 */
+	
 	public boolean appendIndex(String key, int value, FieldNames indexType) {
 
 		TreeMap<String, LinkedList<Integer>> index = null;
