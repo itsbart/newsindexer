@@ -2,11 +2,17 @@ package edu.buffalo.cse.irf14.analysis.test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 import edu.buffalo.cse.irf14.analysis.Tokenizer;
 import edu.buffalo.cse.irf14.analysis.TokenizerException;
+import edu.buffalo.cse.irf14.document.Document;
+import edu.buffalo.cse.irf14.document.FieldNames;
+import edu.buffalo.cse.irf14.document.Parser;
+import edu.buffalo.cse.irf14.document.ParserException;
 
 public class TokenizerTest {
 
@@ -63,14 +69,44 @@ public class TokenizerTest {
 		//getCurrent test
 		System.out.println(tokenStreams[0].next());
 		assertEquals("by the same stores which", tokenStreams[0].getCurrent().toString());
+			
+	}
+	
+	
+	@Test
+	public void test2(){
 		
-		String test = tokenStreams[0].getCurrent().toString();
 		
-		test += "DUPA";
+		String testFolder =  "/Users/Bartek/Documents/FALL2014/CSE535/training";
+		String filename = testFolder + File.separatorChar + "acq" + File.separatorChar + "0000005";
 		
-		String test2 = tokenStreams[0].getCurrent().toString();
+		Tokenizer tokenizer = new Tokenizer();
+		Document d = null;
 		
+		try {
+			d = Parser.parse(filename);
+		} catch (ParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String[] content = d.getField(FieldNames.CONTENT);
+		String text = content[0];
+		
+		try {
+			TokenStream ts = tokenizer.consume(text);
+			
+			while(ts.hasNext()){
+				System.out.println(ts.next());
+			}
+	
+		} catch (TokenizerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
+		
+	
 
 }

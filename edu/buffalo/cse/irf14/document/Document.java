@@ -12,13 +12,24 @@ import java.util.HashMap;
 public class Document {
 	//Sample implementation - you can change this if you like
 	private HashMap<FieldNames, String[]> map;
+	private int docId;
 	
 	/**
 	 * Default constructor
 	 */
 	public Document() {
 		map = new HashMap<FieldNames, String[]>();
+		docId = -1;
 	}
+	
+	public void setID(int id){
+		docId = id;
+	}
+	
+	public int getID(){
+		return docId;
+	}
+	
 	
 	/**
 	 * Method to set the field value for the given {@link FieldNames} field

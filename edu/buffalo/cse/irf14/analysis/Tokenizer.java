@@ -18,7 +18,7 @@ public class Tokenizer {
 	
 	public Tokenizer() {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
-
+		_delim = " ";
 	}
 	
 	/**
