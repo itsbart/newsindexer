@@ -16,11 +16,13 @@ public class TokenStream implements Iterator<Token>{
 	
 	private ArrayList<Token> _tokenArray;
 	private int _current;
+	private int _lastToken; //index of lastToken
 	
 	
 	public TokenStream(ArrayList<Token> tokenArray){
 		this._tokenArray = tokenArray;
 		this._current = 0;
+		this._lastToken = -1;
 	}
 	
 	
@@ -33,7 +35,8 @@ public class TokenStream implements Iterator<Token>{
 	@Override
 	public boolean hasNext() {
 		// TODO YOU MUST IMPLEMENT THIS
-		return (_current < _tokenArray.size()) ? true : false;
+		
+		return (_current <= _tokenArray.size() - 1 && !_tokenArray.isEmpty()) ? true : false;
 	}
 
 	/**
@@ -47,13 +50,16 @@ public class TokenStream implements Iterator<Token>{
 	public Token next() {
 		
 		// TODO YOU MUST IMPLEMENT THIS
-		if(_tokenArray.get(_current) != null){
-			Token result = _tokenArray.get(_current);
-			_current++;
-			return result;
+
+		Token result = null;
+
+		if(_current <= _tokenArray.size() - 1){
+			 result = _tokenArray.get(_current);
 		}
 		
-		return null;
+		_lastToken = _current;
+		_current++;
+		return result;
 	}
 	
 	/**
@@ -66,9 +72,18 @@ public class TokenStream implements Iterator<Token>{
 	public void remove() {
 		// TODO YOU MUST IMPLEMENT THIS
 		
+		if(_tokenArray.isEmpty()){
+			return;
+		}
+	
 		int index = (_current == 0) ? 0 : _current - 1; //index to be deleted
 		_tokenArray.remove(index);	
-		_current = (_current == 0) ? 0 : _current--; //adjust current pointer, everything shifted to left
+	
+		if(index == _lastToken){
+			_lastToken = -1;
+		}
+		
+		_current = (_current == 0) ? 0 : _current - 1; //adjust current pointer, everything shifted to left
 	}
 	
 	/**
@@ -79,6 +94,7 @@ public class TokenStream implements Iterator<Token>{
 	public void reset() {
 		//TODO : YOU MUST IMPLEMENT THIS
 		_current = 0;
+		_lastToken = -1;
 	}
 	
 	/**
@@ -103,7 +119,7 @@ public class TokenStream implements Iterator<Token>{
 	public void append(TokenStream stream) {
 		//TODO : YOU MUST IMPLEMENT THIS
 		
-		if(stream.getTokenArray() != null){
+		if(stream != null && stream.getTokenArray() != null){
 			_tokenArray.addAll(stream.getTokenArray());
 		}
 	}
@@ -118,9 +134,13 @@ public class TokenStream implements Iterator<Token>{
 	 */
 	public Token getCurrent() {
 		//TODO: YOU MUST IMPLEMENT THIS
-		
-		//returns current (or last next) token 
-		return _tokenArray.get(_current - 1);
+				
+		if(_lastToken == -1 || _lastToken >= _tokenArray.size()){
+			return null;
+		}else{
+			return _tokenArray.get(_lastToken);
+		}
+
 	}
 
 	

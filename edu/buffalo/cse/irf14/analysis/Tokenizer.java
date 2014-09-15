@@ -48,7 +48,7 @@ public class Tokenizer {
 	public TokenStream consume(String str) throws TokenizerException {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
 		
-		if(str != null) {
+		if(str != null && !(str.isEmpty())) {
 			String[] splitted = str.split(_delim);
 			if(splitted != null && splitted.length > 0) {
 				ArrayList<Token> tokens = new ArrayList<Token>();

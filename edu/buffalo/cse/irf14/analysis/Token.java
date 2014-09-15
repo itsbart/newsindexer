@@ -86,7 +86,7 @@ public class Token {
 			String merged = termText;
 
 			for (Token token : tokens) {
-				merged += token.toString() + " ";
+				merged += " " + token.toString();
 			}
 		
 			termText = merged.trim(); //no trailing space
