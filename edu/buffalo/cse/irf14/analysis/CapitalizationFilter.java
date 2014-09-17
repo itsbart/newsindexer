@@ -54,8 +54,10 @@ public class CapitalizationFilter extends TokenFilter {
 						&& Character.isUpperCase(currentString.charAt(0)) && 
 						currentString.length() > 1){
 					
-					_filtered.get(_filtered.size() - 1).setTermText(_previous + " ");
+					_filtered.get(_filtered.size() - 1).setTermText(_previous);
 					_filtered.get(_filtered.size() - 1).merge(current);
+					
+					currentString = _filtered.get(_filtered.size() - 1).getTermText();
 				
 			//CASE: CamelCase word, must not be first word in sentence
 			}else if((counter > 1 && matcher.find()) || 

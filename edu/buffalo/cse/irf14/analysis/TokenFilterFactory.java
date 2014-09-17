@@ -50,6 +50,9 @@ public class TokenFilterFactory {
 			
 		case CAPITALIZATION :
 			return new CapitalizationFilter(stream);
+		
+		case STOPWORD :
+			return new StopWordFilter(stream);
 			
 		default :
 			return null;
