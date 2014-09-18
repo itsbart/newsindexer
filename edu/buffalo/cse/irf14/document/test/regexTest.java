@@ -77,8 +77,9 @@ public class regexTest {
 		}
 		
 		String input2 = "End.";
-		if(input2.endsWith(".")){
+		if(input2.endsWith("End.")){
 			System.out.println("END OF SENTENCE!");
+			input2 = input2.substring(0,0);
 		}
 				
 		

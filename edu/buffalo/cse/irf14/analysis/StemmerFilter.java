@@ -11,6 +11,7 @@ public class StemmerFilter extends TokenFilter{
 
 	public StemmerFilter(TokenStream stream) {
 		super(stream);
+		_input = stream;
 		_filtered = new ArrayList<Token>();
 				
 		wordBuff = null;
@@ -24,12 +25,13 @@ public class StemmerFilter extends TokenFilter{
 			wordBuff = current.getTermText();
 			
 			//before stemming
-			if(!wordBuff.isEmpty() && wordBuff.length() > 0){
-				step1(); step2(); step3(); step4();
+			if(!wordBuff.isEmpty() && wordBuff.length() > 0 && 
+					Character.isLetter(wordBuff.charAt(0))){
+				step1(); step2(); step3(); step4(); step5();
 			}
 			
 			//after stemming
-			if(!wordBuff.isEmpty() && wordBuff.length() > 0){
+			if(!wordBuff.isEmpty() && wordBuff.length() > 1){
 				current.setTermText(wordBuff);
 				_filtered.add(current);
 				return true;
@@ -86,19 +88,20 @@ public class StemmerFilter extends TokenFilter{
 			//words ending with *eed
 			}else if(wordBuff.endsWith("eed")){
 				//EED -> EE agreed -> agree
-				if(k > 0) wordBuff = wordBuff.substring(0, k - 1);
+				if(k > 0) wordBuff = wordBuff.substring(0, k - 2);
 			//words ending with *ed
 			}else if(wordBuff.endsWith("ed")){
-				String temp = wordBuff.substring(0, k - 2);
+				wordBuff = wordBuff.substring(0, k - 2);
 				//BL -> BLE disabled -> disable
-				if(temp.endsWith("bl")) wordBuff = temp.concat("e");
+				//if(wordBuff.endsWith("bl")) wordBuff = wordBuff.concat("e");
 				//IZ -> IZE fossilzed -> fosillize
-				if(temp.endsWith("iz")) wordBuff = temp.concat("e");
+				//if(wordBuff.endsWith("iz")) wordBuff = wordBuff.concat("e");
+				
 			//words ending with *ing
 			}else if(wordBuff.endsWith("ing")){
-				String temp = wordBuff.substring(0, k - 3);
+				wordBuff = wordBuff.substring(0, k - 3);
 				//AT -> ATE mating -> mate
-				if(temp.endsWith("at")) wordBuff = temp.concat("e");
+				if(wordBuff.endsWith("at")) wordBuff = wordBuff.concat("e");
 			}
 			//possible double character case ?
 		}
@@ -191,6 +194,9 @@ public class StemmerFilter extends TokenFilter{
 					if(wordBuff.endsWith("logi")) 
 						wordBuff = wordBuff.substring(0, k - 1);
 					break;
+					
+				default :
+					return;
 			}
 			
 		}
@@ -231,6 +237,98 @@ public class StemmerFilter extends TokenFilter{
 					if(wordBuff.endsWith("ness")) 
 						wordBuff = wordBuff.substring(0, k - 4);
 					break;
+				
+				default :
+					return;
+			}
+		}
+	}
+	
+	
+	public void step5(){
+		if(wordBuff != null && !wordBuff.isEmpty()){
+			int k = wordBuff.length();
+			char var = wordBuff.charAt(k - 2); //last char
+			
+			switch(var){
+				case 'a':
+					if(wordBuff.endsWith("al")) 
+						wordBuff = wordBuff.substring(0, k - 2);
+				break;
+				
+				case 'c':
+					if(wordBuff.endsWith("ance")) 
+						wordBuff = wordBuff.substring(0, k - 4);
+					if(wordBuff.endsWith("ence")) 
+						wordBuff = wordBuff.substring(0, k - 4);
+				break;
+				
+				case 'e':
+					//if(wordBuff.endsWith("er")) 
+					//	wordBuff = wordBuff.substring(0, k - 2);
+					break;
+				
+				case 'i':
+					if(wordBuff.endsWith("ic")) 
+						wordBuff = wordBuff.substring(0, k - 2);
+					break;
+					
+				case 'l':
+					if(wordBuff.endsWith("able")) 
+						wordBuff = wordBuff.substring(0, k - 4);
+					if(wordBuff.endsWith("ible")) 
+						wordBuff = wordBuff.substring(0, k - 4);
+				break;
+					
+				case 'n':
+					if(wordBuff.endsWith("ant")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					if(wordBuff.endsWith("ement")) 
+						wordBuff = wordBuff.substring(0, k - 5);
+					if(wordBuff.endsWith("ment")) 
+						wordBuff = wordBuff.substring(0, k - 4);
+					if(wordBuff.endsWith("ent")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+				break;
+				
+				case 'o':
+					if(wordBuff.endsWith("ion")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					
+					if(wordBuff.endsWith("ou")) 
+						wordBuff = wordBuff.substring(0, k - 2);
+					break;
+				
+				case 's':
+					if(wordBuff.endsWith("ism")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					break;
+				
+				case 't':
+					if(wordBuff.endsWith("ate")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					if(wordBuff.endsWith("iti")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					break;
+					
+				case 'u' :
+					if(wordBuff.endsWith("ous")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					break;
+				
+				case 'v' :
+					if(wordBuff.endsWith("ive")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+					break;
+				
+				case 'z' :
+					if(wordBuff.endsWith("ize")) 
+						wordBuff = wordBuff.substring(0, k - 3);
+				break;
+				
+				default :
+					return;
+					
 			}
 		}
 	}
@@ -241,7 +339,7 @@ public class StemmerFilter extends TokenFilter{
 	@Override
 	public TokenStream getStream() {
 		
-		return null;
+		return new TokenStream(_filtered);
 	}
 
 }

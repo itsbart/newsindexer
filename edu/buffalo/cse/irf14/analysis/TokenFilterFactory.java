@@ -54,6 +54,9 @@ public class TokenFilterFactory {
 		case STOPWORD :
 			return new StopWordFilter(stream);
 			
+		case STEMMER :
+			return new StemmerFilter(stream);
+			
 		default :
 			return null;
 			
