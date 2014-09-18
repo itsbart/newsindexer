@@ -41,7 +41,7 @@ public class StemmerFilter extends TokenFilter{
 			_input.remove();
 			return true;
 		}
-		
+				
 		return false;
 	}
 	

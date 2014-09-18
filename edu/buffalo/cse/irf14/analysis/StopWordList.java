@@ -556,7 +556,7 @@ public class StopWordList {
 	public static StopWordList getInstance() {
 
 		if (_instance == null) {
-			return new StopWordList();
+			_instance = new StopWordList();
 		}
 
 		return _instance;

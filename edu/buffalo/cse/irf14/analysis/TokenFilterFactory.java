@@ -57,6 +57,9 @@ public class TokenFilterFactory {
 		case STEMMER :
 			return new StemmerFilter(stream);
 			
+		case ACCENT :
+			return new AccentFilter(stream);
+			
 		default :
 			return null;
 			
