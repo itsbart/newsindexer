@@ -59,6 +59,12 @@ public class TokenFilterFactory {
 			
 		case ACCENT :
 			return new AccentFilter(stream);
+		
+		case SYMBOL :
+			return new SymbolFilter(stream);
+			
+		case SPECIALCHARS :
+			return new SpecialCharFilter(stream);
 			
 		default :
 			return null;

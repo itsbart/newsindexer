@@ -1,5 +1,8 @@
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 
 /**
    It should act on the following symbols with actions as described:
@@ -18,35 +21,121 @@ package edu.buffalo.cse.irf14.analysis;
 
 public class SymbolFilter extends TokenFilter {
 
-	TokenStream _inputStream;
-	TokenStream _filtered;
+	TokenStream _input;
+	ArrayList<Token> _filtered;
+	ContractionList list;
+	String currentString;
+	
+	
+	private static final Pattern UNDESIRABLES = Pattern.compile("[,.;!?]+$");
+	private static final Pattern APOSTROPHE = Pattern.compile("(?:'|'s)$");
 	
 	public SymbolFilter(TokenStream stream) {
 		super(stream);
-		_inputStream = stream;
+		_input = stream;
+		_filtered = new ArrayList<Token>();
+		list = ContractionList.getInstance();
+		currentString = null;
 	}
 
 	@Override
 	public boolean increment() throws TokenizerException {
 		
-		if(_inputStream.hasNext()){
-			Token current = _inputStream.next();
-			if(current != null){
-				
+		if(_input.hasNext()){
+			Token current = _input.next();
+			currentString = current.getTermText();
 			
-			}else{	
-				throw new TokenizerException();
+			//before stemming
+			if(currentString != null && !currentString.isEmpty()){
+				step1(); step2(); step3(); step4();
 			}
+			
+			current.setTermText(currentString);
+			_filtered.add(current);
+			_input.remove();
+			
+			return true;
 		}
-		
 		
 		return false;
 	}
 
+	//remove punctuation
+	public void step1(){
+		if(currentString != null && !currentString.isEmpty()){
+			currentString = UNDESIRABLES.matcher(currentString).replaceAll("");
+		}
+	}
+	
+	
+	//remove trailing 's | s' | '
+	public void step3(){
+		if(currentString != null && !currentString.isEmpty()){
+			currentString = APOSTROPHE.matcher(currentString).replaceAll("");
+		}
+	}
+	
+	//substitue with contraction
+	public void step2(){
+		if(currentString != null && !currentString.isEmpty()){
+			if(list.is(currentString.toLowerCase())){
+				char c = currentString.charAt(0);
+				currentString = list.get(currentString.toLowerCase());
+				if(Character.isUpperCase(c)){
+					currentString = c + currentString.substring(1);
+				}
+			}
+			if(currentString.endsWith("'em")){
+				currentString = currentString.substring(0, currentString.length() - 3).concat("them");
+			}
+			
+			
+		}
+	}
+	
+	//remove hyphen AND any apostrophes
+	public void step4(){
+		if(currentString != null && !currentString.isEmpty()){
+			if(currentString.contains("-")){
+				String[] splitted = currentString.split("-");
+				boolean isDigit = false;
+				
+				for(String s : splitted){
+					if(isDigit = checkNumber(s)){
+						break;
+					}
+				}
+				
+				if(!isDigit){
+					currentString = currentString.replace("-", " ").trim();
+				}
+			}
+			
+			if(currentString.contains("'")){
+				currentString = currentString.replace("'", "");
+			}
+			
+		}
+	}
+	
+	
+	public boolean checkNumber(String s){
+		
+		boolean containsDigit = false;
+		for(Character c : s.toCharArray()){
+			if(containsDigit = Character.isDigit(c)){
+				break;
+			}
+		}
+	
+		return containsDigit;
+	}
+	
+
 	@Override
 	public TokenStream getStream() {
 		// TODO Auto-generated method stub
-		return _inputStream;
+		return new TokenStream(_filtered);
 	}
 
 }
