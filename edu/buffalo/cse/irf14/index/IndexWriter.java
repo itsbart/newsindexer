@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import edu.buffalo.cse.irf14.analysis.Analyzer;
+import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
 import edu.buffalo.cse.irf14.analysis.TokenFilter;
 import edu.buffalo.cse.irf14.analysis.TokenFilterFactory;
 import edu.buffalo.cse.irf14.analysis.TokenFilterType;
@@ -32,6 +34,8 @@ import edu.buffalo.cse.irf14.document.FieldNames;
 
 public class IndexWriter {
 
+	AnalyzerFactory analyzerFactory = AnalyzerFactory.getInstance();
+	
 	String mIndexDir;
 	TreeMap<String, LinkedList<Integer>> authorIndex;
 	TreeMap<String, LinkedList<Integer>> categoryIndex;
@@ -239,24 +243,21 @@ public class IndexWriter {
 	
 	public void buildTermIndex(String[] Content, int docID) throws TokenizerException{
 		
-		if(Content != null){
+		if(Content != null && Content[0] != null
+				&& !Content[0].isEmpty()){
+			
 			String content = Content[0];
-			
-		
-			
+				
 			Tokenizer tokenizer = new Tokenizer();
 			TokenStream ts = tokenizer.consume(content);
 			
-			/*
-			TokenFilter filter = factory.getFilterByType(TokenFilterType.SPECIALCHARS, ts);
-			// analyzer
+			Analyzer contentAnalysis = analyzerFactory.getAnalyzerForField(FieldNames.CONTENT, ts);
 			
-			while(filter.increment()){
+			while(contentAnalysis.increment()){
 				
 			}
 			
-			ts = filter.getStream();
-			*/
+			ts = contentAnalysis.getStream();
 			
 			while(ts.hasNext()){
 				if (!appendIndex(ts.next().toString().trim(), docID, FieldNames.CONTENT)) {
@@ -355,6 +356,9 @@ public class IndexWriter {
 			}
 
 			try {
+				
+				long startTime = System.currentTimeMillis();
+				
 				File file = new File(mIndexDir + "/" + name.toString() + ".txt");
 
 				// if file doesnt exists, then create it
@@ -368,16 +372,27 @@ public class IndexWriter {
 				for (Entry<String, LinkedList<Integer>> entry : index
 						.entrySet()) {
 					bw.write(entry.getKey() + " : ");
-					String listing = "";
+					
+					StringBuilder builder = new StringBuilder();
+				
+					
 					for (Integer value : entry.getValue()) {
-						listing += value.toString() + ",";
+						//listing += value.toString() + ",";
+						builder.append(value);
+						builder.append(",");
 					}
-					listing = listing.replaceAll(",$", "");
-					bw.write(listing);
+					//listing = listing.replaceAll(",$", "");
+					builder.append("null");
+					bw.write(builder.toString());
 					bw.newLine();
 				}
-
+				
+				bw.flush();
 				bw.close();
+				
+				long estimatedTime = System.currentTimeMillis() - startTime;
+				System.out.println("FINISHED INDEXING: " + name.toString() + " TIME: " + estimatedTime + "ms");
+				
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -385,72 +400,40 @@ public class IndexWriter {
 			}
 		}
 		
-		
+		System.out.println("AUTHOR SIZE: " + authorIndex.size());
+		System.out.println("CATEGORY SIZE: " + categoryIndex.size());
+		System.out.println("PLACE SIZE: " + placeIndex.size());
 		System.out.println("TERM SIZE: " + termIndex.size());
+
+		getStats();
+		
 		
 	}
+	
+	public static void getStats()
+	{
+		int mb = 1024*1024;
 
-	private void buildCategoryDictionary(Document d) {
+		//Getting the runtime reference from system
+		Runtime runtime = Runtime.getRuntime();
 
-		String[] categories = d.getField(FieldNames.CATEGORY);
-		String category = categories[0];
-		String filePath = mIndexDir + "/categoryDictionary";
-		String dictionaryEntry = category + "\t" + ids[CATEGORY_ID] + "\n";
-		createDictionaryFile(filePath, dictionaryEntry, CATEGORY_ID);
+		System.out.println("##### Heap utilization statistics [MB] #####");
 
+		//Print used memory
+		System.out.println("Used Memory:"
+								   + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+
+		//Print free memory
+		System.out.println("Free Memory:"
+								   + runtime.freeMemory() / mb);
+
+		//Print total available memory
+		System.out.println("Total Memory:" + runtime.totalMemory() / mb);
+
+		//Print Maximum available memory
+		System.out.println("Max Memory:" + runtime.maxMemory() / mb);
 	}
-
-	private void buildPlaceDictionary(Document d) {
-
-		String[] places = d.getField(FieldNames.PLACE);
-		String place = places[0];
-		String filePath = mIndexDir + "/placeDictionary";
-		String dictionaryEntry = place + "\t" + ids[PLACE_ID] + "\n";
-		createDictionaryFile(filePath, dictionaryEntry, PLACE_ID);
-
-	}
-
-	private void buildFileDictionary(Document d) {
-
-		String filePath = mIndexDir + "/fileDictionary";
-		String[] fileIds = d.getField(FieldNames.FILEID);
-		String fileId = fileIds[0];
-		String dictionaryEntry = fileId + "\t" + ids[DOC_ID] + "\n";
-		createDictionaryFile(filePath, dictionaryEntry, DOC_ID);
-
-	}
-
-	/**
-	 * 
-	 * Task: Creates a dictionary file
-	 * 
-	 * @param filePath
-	 * @param dictionaryEntry
-	 * @param id
-	 *            - used to identify which element of the ids array to increment
-	 * 
-	 */
-
-	private void createDictionaryFile(String filePath, String dictionaryEntry,
-			int id) {
-
-		File file = new File(filePath);
-
-		try {
-
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-
-			FileWriter fileWriter = new FileWriter(file, true);
-			fileWriter.append(dictionaryEntry);
-			fileWriter.close();
-			ids[id]++;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
+	
 
 }
+

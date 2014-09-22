@@ -10,6 +10,10 @@ import edu.buffalo.cse.irf14.document.FieldNames;
  * This factory class is responsible for instantiating "chained" {@link Analyzer} instances
  */
 public class AnalyzerFactory {
+	
+	private static AnalyzerFactory _instance = null;
+	
+	
 	/**
 	 * Static method to return an instance of the factory class.
 	 * Usually factory classes are defined as singletons, i.e. 
@@ -23,7 +27,12 @@ public class AnalyzerFactory {
 	 */
 	public static AnalyzerFactory getInstance() {
 		//TODO: YOU NEED TO IMPLEMENT THIS METHOD
-		return null;
+		
+		if(_instance == null){
+			_instance = new AnalyzerFactory();
+		}
+		
+		return _instance;
 	}
 	
 	/**
@@ -39,6 +48,13 @@ public class AnalyzerFactory {
 	 */
 	public Analyzer getAnalyzerForField(FieldNames name, TokenStream stream) {
 		//TODO : YOU NEED TO IMPLEMENT THIS METHOD
+		
+		switch(name){
+		
+			case CONTENT :
+				return new ContentAnalyzer(stream);
+		}
+		
 		return null;
 	}
 }

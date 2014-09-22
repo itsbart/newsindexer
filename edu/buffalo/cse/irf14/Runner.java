@@ -48,6 +48,7 @@ public class Runner {
 				
 				if (files == null)
 					continue;
+			
 				
 				for (String f : files) {
 					try {
@@ -68,5 +69,5 @@ public class Runner {
 			e.printStackTrace();
 		}
 	}
-
 }
+	

@@ -19,7 +19,7 @@ public class DateFilter extends TokenFilter{
 	ArrayList<Token> _filtered;
 	TokenStream _input;
 	
-	//defaults 
+	//default values
 	private static final String DEFAULT_YYYY = "1900";
 	private static final String DEFAULT_MMDD = "01";
 	private static final String DEFAULT_HHMM = "00";
