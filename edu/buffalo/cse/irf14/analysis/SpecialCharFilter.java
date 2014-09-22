@@ -30,12 +30,11 @@ public class SpecialCharFilter extends TokenFilter{
 			
 			Token current = _input.next();
 			String currentString = current.getTermText();
-			
+			boolean isDigit = false;
 			//check for hyphen inclusion
 			
 			if(currentString.contains("-")){
 				String[] splitted = currentString.split("-");
-				boolean isDigit = false;
 				
 				for(String s : splitted){
 					if(isDigit = checkNumber(s)){
@@ -59,7 +58,8 @@ public class SpecialCharFilter extends TokenFilter{
 						!Character.isDigit(charBuff[i])){
 					
 					//hackish way to only ommit internal . - i know its ugly but time's money :<
-					if(charBuff[i] == '.' && i > 0){
+					if(charBuff[i] == '.' && i > 0 || 
+							charBuff[i] == '-' && isDigit){
 						
 					}else{
 						char[] newBuffer = new char[charBuff.length - 1];
@@ -71,10 +71,12 @@ public class SpecialCharFilter extends TokenFilter{
 				}
 			}
 			
-			current.setTermBuffer(charBuff);
-			_filtered.add(current);
+			if(charBuff.length > 0){
+				current.setTermBuffer(charBuff);
+				_filtered.add(current);
+			}
+			
 			return true;
-		
 		}
 		
 		return false;

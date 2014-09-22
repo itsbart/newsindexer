@@ -66,6 +66,9 @@ public class TokenFilterFactory {
 		case SPECIALCHARS :
 			return new SpecialCharFilter(stream);
 			
+		case NUMERIC :
+			return new NumberFilter(stream);
+			
 		default :
 			return null;
 			

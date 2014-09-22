@@ -50,9 +50,10 @@ public class SymbolFilter extends TokenFilter {
 				step1(); step2(); step3(); step4();
 			}
 			
-			current.setTermText(currentString);
-			_filtered.add(current);
-			_input.remove();
+			if(!currentString.isEmpty()){
+				current.setTermText(currentString);
+				_filtered.add(current);
+			}
 			
 			return true;
 		}

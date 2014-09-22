@@ -28,6 +28,9 @@ public class NumberRuleTest extends TFRuleBaseTest {
 					assertArrayEquals(
 							new String[] { "The", "number", "is", "the", "sixth", "prime", "number" },
 							runTest(TokenFilterType.NUMERIC, "The number 13 is the sixth prime number"));
+					assertArrayEquals(
+							new String[] { "The", "number", "/.", "is", "the", "sixth", "prime", "number" },
+							runTest(TokenFilterType.NUMERIC, "The number /.313.21 is the sixth prime number"));
 
 			} catch (TokenizerException e) {
 				fail("Exception thrown when not expected!");

@@ -16,6 +16,9 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import edu.buffalo.cse.irf14.analysis.TokenFilter;
+import edu.buffalo.cse.irf14.analysis.TokenFilterFactory;
+import edu.buffalo.cse.irf14.analysis.TokenFilterType;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 import edu.buffalo.cse.irf14.analysis.Tokenizer;
 import edu.buffalo.cse.irf14.analysis.TokenizerException;
@@ -49,6 +52,8 @@ public class IndexWriter {
 	private static final int AUTHOR_ID = 2;
 	private static final int CATEGORY_ID = 3;
 	private static final int PLACE_ID = 4;
+	
+	TokenFilterFactory factory = TokenFilterFactory.getInstance();
 
 	public enum IndexNames {
 		AUTHOR_INDEX, CATEGORY_INDEX, PLACE_INDEX, TERM_INDEX
@@ -237,10 +242,21 @@ public class IndexWriter {
 		if(Content != null){
 			String content = Content[0];
 			
+		
+			
 			Tokenizer tokenizer = new Tokenizer();
 			TokenStream ts = tokenizer.consume(content);
 			
+			/*
+			TokenFilter filter = factory.getFilterByType(TokenFilterType.SPECIALCHARS, ts);
 			// analyzer
+			
+			while(filter.increment()){
+				
+			}
+			
+			ts = filter.getStream();
+			*/
 			
 			while(ts.hasNext()){
 				if (!appendIndex(ts.next().toString().trim(), docID, FieldNames.CONTENT)) {
@@ -309,7 +325,8 @@ public class IndexWriter {
 	 */
 
 	public void close() throws IndexerException {
-
+		
+		
 		TreeMap<String, LinkedList<Integer>> index = null;
 
 		IndexNames[] indexes = IndexNames.values();
@@ -367,6 +384,10 @@ public class IndexWriter {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		System.out.println("TERM SIZE: " + termIndex.size());
+		
 	}
 
 	private void buildCategoryDictionary(Document d) {
