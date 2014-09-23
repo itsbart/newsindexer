@@ -48,8 +48,6 @@ public class SpecialCharFilter extends TokenFilter{
 				
 			}
 			
-	
-			
 			char[] charBuff = currentString.toCharArray();
 			
 			//check for non letters nor numbers - excluding '.' inside word

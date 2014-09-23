@@ -53,7 +53,9 @@ public class Tokenizer {
 			if(splitted != null && splitted.length > 0) {
 				ArrayList<Token> tokens = new ArrayList<Token>();
 				for(String element : splitted){
-					tokens.add(new Token(element.trim()));
+					if(!element.trim().isEmpty()){
+						tokens.add(new Token(element.trim()));
+					}
 				}
 				return new TokenStream(tokens);
 			}else{

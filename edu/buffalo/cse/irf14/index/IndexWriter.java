@@ -11,13 +11,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import edu.buffalo.cse.irf14.analysis.Analyzer;
 import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
+import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenFilter;
 import edu.buffalo.cse.irf14.analysis.TokenFilterFactory;
 import edu.buffalo.cse.irf14.analysis.TokenFilterType;
@@ -35,28 +38,15 @@ import edu.buffalo.cse.irf14.document.FieldNames;
 public class IndexWriter {
 
 	AnalyzerFactory analyzerFactory = AnalyzerFactory.getInstance();
-	
+
 	String mIndexDir;
 	TreeMap<String, LinkedList<Integer>> authorIndex;
 	TreeMap<String, LinkedList<Integer>> categoryIndex;
 	TreeMap<String, LinkedList<Integer>> placeIndex;
 	TreeMap<String, LinkedList<Integer>> termIndex;
 
-	ArrayList<Document> documentDictionary;
-
-	/*
-	 * Each ID constant represents a location in the ids array We'll increment
-	 * each element of the ids array when we build the dictionary I created an
-	 * array because I didn't know increment the ids permanently without an
-	 * array that maintained a reference
-	 */
-
-	private static final int DOC_ID = 0;
-	private static final int TERM_ID = 1;
-	private static final int AUTHOR_ID = 2;
-	private static final int CATEGORY_ID = 3;
-	private static final int PLACE_ID = 4;
-	
+	ArrayList<Document> documentDictionary;	
+	HashMap<String, Integer> termFrequency;
 	TokenFilterFactory factory = TokenFilterFactory.getInstance();
 
 	public enum IndexNames {
@@ -67,7 +57,9 @@ public class IndexWriter {
 
 	/**
 	 * Default constructor
-	 * @param indexDir The root directory to be sued for indexing
+	 * 
+	 * @param indexDir
+	 *            The root directory to be sued for indexing
 	 */
 
 	public IndexWriter(String indexDir) {
@@ -81,14 +73,18 @@ public class IndexWriter {
 		categoryIndex = new TreeMap<String, LinkedList<Integer>>();
 		placeIndex = new TreeMap<String, LinkedList<Integer>>();
 		termIndex = new TreeMap<String, LinkedList<Integer>>();
+		
+		termFrequency = new HashMap<String, Integer>();
 	}
 
 	/**
 	 * Assigns Document Id for selected document in incremental fashion
-	 * @param Document for which we want to assign ID
+	 * 
+	 * @param Document
+	 *            for which we want to assign ID
 	 * @return Assigned ID
 	 */
-	
+
 	public int updateDocumentDictionary(Document d) {
 
 		this.documentDictionary.add(d);
@@ -107,8 +103,10 @@ public class IndexWriter {
 	 * analyzers and then indexing the results for each indexable field within
 	 * the document.
 	 * 
-	 * @param d : The Document to be added
-	 * @throws IndexerException: In case any error occurs
+	 * @param d
+	 *            : The Document to be added
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
 
 	public void addDocument(Document d) throws IndexerException {
@@ -123,7 +121,7 @@ public class IndexWriter {
 				buildCategoryIndex(d.getField(FieldNames.CATEGORY), d.getID());
 				buildPlaceIndex(d.getField(FieldNames.PLACE), d.getID());
 				buildTermIndex(d.getField(FieldNames.CONTENT), d.getID());
-				
+
 			} catch (TokenizerException e) {
 				e.printStackTrace();
 			}
@@ -141,15 +139,16 @@ public class IndexWriter {
 
 	/**
 	 * 
-	 * Method responsible for updating author Index.
-	 * Tokenizes authors and uses author analyzer to filter out tokens
+	 * Method responsible for updating author Index. Tokenizes authors and uses
+	 * author analyzer to filter out tokens
 	 * 
-	 * @param authors: String array containing one or more authors, docID: document ID of current doc
-	 * @throws IndexerException: In case any error occurs
+	 * @param authors
+	 *            : String array containing one or more authors, docID: document
+	 *            ID of current doc
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
-	
-	
-	
+
 	public void buildAuthorIndex(String[] authors, int docID)
 			throws TokenizerException {
 
@@ -181,10 +180,13 @@ public class IndexWriter {
 	 * 
 	 * Method responsible for updating category Index.
 	 * 
-	 * @param cat: String array containing category, docID: document ID of current doc
-	 * @throws IndexerException: In case any error occurs
+	 * @param cat
+	 *            : String array containing category, docID: document ID of
+	 *            current doc
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
-	
+
 	public void buildCategoryIndex(String[] cat, int docID)
 			throws TokenizerException {
 
@@ -208,64 +210,82 @@ public class IndexWriter {
 
 	/**
 	 * 
-	 * Method responsible for updating place Index.
-	 * Uses PlaceAnalyzer to filter out tokens.
-	 * @param Place: String array containing place, docID: document ID of current doc
-	 * @throws IndexerException: In case any error occurs
+	 * Method responsible for updating place Index. Uses PlaceAnalyzer to filter
+	 * out tokens.
+	 * 
+	 * @param Place
+	 *            : String array containing place, docID: document ID of current
+	 *            doc
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
-	
+
 	public void buildPlaceIndex(String[] Place, int docID)
 			throws TokenizerException {
 
 		if (Place != null) {
 			String place = Place[0];
 
-			// Tokenizer tokenizer = new Tokenizer();
-			// TokenStream ts = tokenizer.consume(category);
-			// analyzer
+			//dummy delimiter - want to save entire token
+			Tokenizer tokenizer = new Tokenizer("#");
+			TokenStream ts = tokenizer.consume(place);
+			
+			Analyzer placeAnalyzer = analyzerFactory.getAnalyzerForField(FieldNames.PLACE, ts);
 
-			if (!appendIndex(place.trim(), docID, FieldNames.PLACE)) {
+			while(placeAnalyzer.increment()){
+				//filtering
+			}
+			ts = placeAnalyzer.getStream();
+			
+			while(ts.hasNext()){
+				if (!appendIndex(ts.next().toString(), docID, FieldNames.PLACE)) {
 				throw new TokenizerException();
+				}
 			}
 
 		} else {
 			return;
 		}
 	}
-	
+
 	/**
 	 * 
-	 * Method responsible for updating term Index.
-	 * Uses TermAnalyzer to filter out tokens into proper form.
-	 * @param Content: String array containing entire content, docID: document ID of current doc
-	 * @throws IndexerException: In case any error occurs
+	 * Method responsible for updating term Index. Uses TermAnalyzer to filter
+	 * out tokens into proper form.
+	 * 
+	 * @param Content
+	 *            : String array containing entire content, docID: document ID
+	 *            of current doc
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
-	
-	public void buildTermIndex(String[] Content, int docID) throws TokenizerException{
-		
-		if(Content != null && Content[0] != null
-				&& !Content[0].isEmpty()){
-			
+
+	public void buildTermIndex(String[] Content, int docID)
+			throws TokenizerException {
+
+		if (Content != null && Content[0] != null && !Content[0].isEmpty()) {
+
 			String content = Content[0];
-				
+
 			Tokenizer tokenizer = new Tokenizer();
 			TokenStream ts = tokenizer.consume(content);
-			
-			Analyzer contentAnalysis = analyzerFactory.getAnalyzerForField(FieldNames.CONTENT, ts);
-			
+
+			Analyzer contentAnalysis =
+			analyzerFactory.getAnalyzerForField(FieldNames.CONTENT, ts);
+
 			while(contentAnalysis.increment()){
-				
 			}
-			
+
 			ts = contentAnalysis.getStream();
-			
-			while(ts.hasNext()){
-				if (!appendIndex(ts.next().toString().trim(), docID, FieldNames.CONTENT)) {
+
+			while (ts.hasNext()) {
+				if (!appendIndex(ts.next().toString().trim(), docID,
+						FieldNames.CONTENT)) {
 					throw new TokenizerException();
 				}
 			}
-		
-		}else{
+
+		} else {
 			return;
 		}
 	}
@@ -273,10 +293,13 @@ public class IndexWriter {
 	/**
 	 * 
 	 * Helper method used for updating respective treeMaps
-	 * @param key: String key, value : docID, indexType: fieldName of index we want to update
+	 * 
+	 * @param key
+	 *            : String key, value : docID, indexType: fieldName of index we
+	 *            want to update
 	 * @return true: operation successful false: error
 	 */
-	
+
 	public boolean appendIndex(String key, int value, FieldNames indexType) {
 
 		TreeMap<String, LinkedList<Integer>> index = null;
@@ -295,7 +318,7 @@ public class IndexWriter {
 		case PLACE:
 			index = this.placeIndex;
 			break;
-			
+
 		case CONTENT:
 			index = this.termIndex;
 			break;
@@ -305,11 +328,21 @@ public class IndexWriter {
 		}
 
 		if (index.containsKey(key)) {
-			index.get(key).add(value);
+			
+			//check if last value in linkedlist is same as this
+		if(index.get(key).getLast() == value){
+				//increase frequency
+				termFrequency.put(key, termFrequency.get(key) + 1);
+			}else{
+				index.get(key).add(value);
+				termFrequency.put(key, termFrequency.get(key) + 1);
+			}
+			
 		} else {
 			LinkedList<Integer> listing = new LinkedList<Integer>();
 			listing.add(value);
 			index.put(key, listing);
+			termFrequency.put(key, 1);
 		}
 		return true;
 	}
@@ -326,8 +359,7 @@ public class IndexWriter {
 	 */
 
 	public void close() throws IndexerException {
-		
-		
+
 		TreeMap<String, LinkedList<Integer>> index = null;
 
 		IndexNames[] indexes = IndexNames.values();
@@ -347,18 +379,18 @@ public class IndexWriter {
 				index = placeIndex;
 				break;
 
-			case TERM_INDEX :
+			case TERM_INDEX:
 				index = termIndex;
 				break;
-				
+
 			default:
 				return;
 			}
 
 			try {
-				
+
 				long startTime = System.currentTimeMillis();
-				
+
 				File file = new File(mIndexDir + "/" + name.toString() + ".txt");
 
 				// if file doesnt exists, then create it
@@ -371,69 +403,61 @@ public class IndexWriter {
 
 				for (Entry<String, LinkedList<Integer>> entry : index
 						.entrySet()) {
-					bw.write(entry.getKey() + " : ");
+					bw.write(entry.getKey() + " ");
+					bw.write(termFrequency.get(entry.getKey()) + " : ");
 					
-					StringBuilder builder = new StringBuilder();
-				
-					
-					for (Integer value : entry.getValue()) {
-						//listing += value.toString() + ",";
-						builder.append(value);
-						builder.append(",");
-					}
-					//listing = listing.replaceAll(",$", "");
-					builder.append("null");
-					bw.write(builder.toString());
+					// StringBuilder builder = new StringBuilder();
+
+					bw.write(entry.getValue().toString());
+					// listing = listing.replaceAll(",$", "");
+					// builder.append("null");
+					// bw.write(builder.toString());
 					bw.newLine();
 				}
-				
+
 				bw.flush();
 				bw.close();
-				
+
 				long estimatedTime = System.currentTimeMillis() - startTime;
-				System.out.println("FINISHED INDEXING: " + name.toString() + " TIME: " + estimatedTime + "ms");
-				
+				System.out.println("FINISHED INDEXING: " + name.toString()
+						+ " TIME: " + estimatedTime + "ms");
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+
 		System.out.println("AUTHOR SIZE: " + authorIndex.size());
 		System.out.println("CATEGORY SIZE: " + categoryIndex.size());
 		System.out.println("PLACE SIZE: " + placeIndex.size());
 		System.out.println("TERM SIZE: " + termIndex.size());
 
 		getStats();
-		
-		
-	}
-	
-	public static void getStats()
-	{
-		int mb = 1024*1024;
 
-		//Getting the runtime reference from system
+	}
+
+	public static void getStats() {
+		
 		Runtime runtime = Runtime.getRuntime();
 
-		System.out.println("##### Heap utilization statistics [MB] #####");
+		NumberFormat format = NumberFormat.getInstance();
 
-		//Print used memory
-		System.out.println("Used Memory:"
-								   + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+		StringBuilder sb = new StringBuilder();
+		long maxMemory = runtime.maxMemory();
+		long allocatedMemory = runtime.totalMemory();
+		long freeMemory = runtime.freeMemory();
 
-		//Print free memory
-		System.out.println("Free Memory:"
-								   + runtime.freeMemory() / mb);
-
-		//Print total available memory
-		System.out.println("Total Memory:" + runtime.totalMemory() / mb);
-
-		//Print Maximum available memory
-		System.out.println("Max Memory:" + runtime.maxMemory() / mb);
+		sb.append("free memory: " + format.format(freeMemory / 1024) + "<br/>");
+		sb.append("allocated memory: " + format.format(allocatedMemory / 1024)
+				+ "<br/>");
+		sb.append("max memory: " + format.format(maxMemory / 1024) + "<br/>");
+		sb.append("total free memory: "
+				+ format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024)
+				+ "<br/>");
+		
+		System.out.println(sb.toString());
+		
 	}
-	
 
 }
-

@@ -53,6 +53,9 @@ public class AnalyzerFactory {
 		
 			case CONTENT :
 				return new ContentAnalyzer(stream);
+				
+			case PLACE :
+				return new PlaceAnalyzer(stream);
 		}
 		
 		return null;

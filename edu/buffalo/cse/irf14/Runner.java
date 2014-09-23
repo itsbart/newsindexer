@@ -41,6 +41,8 @@ public class Runner {
 		Document d = null;
 		IndexWriter writer = new IndexWriter(indexDir);
 		
+		long startTime = System.currentTimeMillis();
+		
 		try {
 			for (String cat : catDirectories) {
 				dir = new File(ipDir+ File.separator+ cat);
@@ -64,6 +66,9 @@ public class Runner {
 			}
 			
 			writer.close();
+			long estimatedTime = System.currentTimeMillis() - startTime;
+			System.out.println("TOTAL RUNNING TIME: " + estimatedTime / 1000 + "s");
+			
 		} catch (IndexerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
