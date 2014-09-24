@@ -69,6 +69,9 @@ public class TokenFilterFactory {
 		case NUMERIC :
 			return new NumberFilter(stream);
 			
+		case DATE :
+			return new DateFilter(stream);
+			
 		default :
 			return null;
 			

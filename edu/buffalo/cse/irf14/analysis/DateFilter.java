@@ -42,6 +42,8 @@ public class DateFilter extends TokenFilter{
 			Token current = _input.next();
 			String currentString = current.getTermText();
 			
+			System.out.println(currentString);
+			
 			//4# [YEAR] <STRING> [MONTH] 2# [DAY]
 			
 			//Possible sequences ? 
@@ -59,10 +61,9 @@ public class DateFilter extends TokenFilter{
 				
 			}
 			
+			return true;
+			
 		}
-		
-		
-		
 		
 		
 		return false;

@@ -88,6 +88,8 @@ public class CapitalizationFilter extends TokenFilter {
 
 				// store old reference
 				_previous = currentString;
+				
+				//System.out.println(currentString);
 
 				if (currentString.endsWith(".")) {
 					// first word in sentence
