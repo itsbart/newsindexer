@@ -3,8 +3,11 @@ package edu.buffalo.cse.irf14.analysis;
 public class PlaceAnalyzer implements Analyzer {
 
 	// order
-	TokenFilterType[] list = { TokenFilterType.CAPITALIZATION,
-			TokenFilterType.SYMBOL};
+	TokenFilterType[] list = { 
+			TokenFilterType.CAPITALIZATION,
+			TokenFilterType.ACCENT,
+			TokenFilterType.SYMBOL,
+			TokenFilterType.SPECIALCHARS};
 
 	TokenFilter currentFilter = null;
 	int currentType = 0;

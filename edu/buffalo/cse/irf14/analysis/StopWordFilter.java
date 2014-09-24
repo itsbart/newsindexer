@@ -13,6 +13,7 @@ public class StopWordFilter extends TokenFilter{
 	TokenStream _input;
 	ArrayList<Token> _filtered;
 	
+	
 	StopWordList list = StopWordList.getInstance();
 	
 

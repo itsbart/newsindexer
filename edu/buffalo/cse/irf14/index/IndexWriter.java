@@ -407,8 +407,13 @@ public class IndexWriter {
 					bw.write(termFrequency.get(entry.getKey()) + " : ");
 					
 					// StringBuilder builder = new StringBuilder();
-
-					bw.write(entry.getValue().toString());
+					
+					for(Integer value : entry.getValue()){
+						bw.write(value.toString());
+						bw.write(" ");
+					}
+					
+					//bw.write(entry.getValue().toString());
 					// listing = listing.replaceAll(",$", "");
 					// builder.append("null");
 					// bw.write(builder.toString());

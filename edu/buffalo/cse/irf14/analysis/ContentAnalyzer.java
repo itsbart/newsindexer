@@ -3,8 +3,16 @@ package edu.buffalo.cse.irf14.analysis;
 public class ContentAnalyzer implements Analyzer{
 	
 	//order
-	TokenFilterType[] list = {TokenFilterType.CAPITALIZATION, TokenFilterType.SYMBOL,
-			TokenFilterType.ACCENT, TokenFilterType.NUMERIC, TokenFilterType.SPECIALCHARS, TokenFilterType.STOPWORD, TokenFilterType.STEMMER};
+	TokenFilterType[] list = {
+			TokenFilterType.STOPWORD,
+			TokenFilterType.ACCENT,
+			TokenFilterType.CAPITALIZATION,
+			TokenFilterType.SYMBOL,
+			TokenFilterType.NUMERIC,
+			TokenFilterType.SPECIALCHARS, 
+			TokenFilterType.STOPWORD,
+			TokenFilterType.STEMMER
+			};
 	
 	TokenFilter currentFilter = null;
 	int currentType = 0;

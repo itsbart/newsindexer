@@ -4,6 +4,7 @@
 package edu.buffalo.cse.irf14;
 
 import java.io.File;
+import java.util.Scanner;
 
 import edu.buffalo.cse.irf14.document.Document;
 import edu.buffalo.cse.irf14.document.Parser;
@@ -32,6 +33,10 @@ public class Runner {
 		String indexDir = args[1];
 		//more? idk!
 		
+		//javavisual
+		Scanner scan = new Scanner(System.in);
+		scan.next();
+		
 		File ipDirectory = new File(ipDir);
 		String[] catDirectories = ipDirectory.list();
 		
@@ -42,6 +47,8 @@ public class Runner {
 		IndexWriter writer = new IndexWriter(indexDir);
 		
 		long startTime = System.currentTimeMillis();
+		
+		System.out.println("INDEXING...");
 		
 		try {
 			for (String cat : catDirectories) {
@@ -67,7 +74,7 @@ public class Runner {
 			
 			writer.close();
 			long estimatedTime = System.currentTimeMillis() - startTime;
-			System.out.println("TOTAL RUNNING TIME: " + estimatedTime / 1000 + "s");
+			System.out.println("TOTAL RUNNING TIME: " + estimatedTime + " ms");
 			
 		} catch (IndexerException e) {
 			// TODO Auto-generated catch block

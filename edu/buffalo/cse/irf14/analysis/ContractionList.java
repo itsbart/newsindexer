@@ -120,9 +120,9 @@ public class ContractionList {
 
 	public static ContractionList getInstance() {
 
-		if (_instance == null) {
+		 if(_instance == null) {
 			_instance = new ContractionList();
-		}
+		 }
 		
 		return _instance;
 	}

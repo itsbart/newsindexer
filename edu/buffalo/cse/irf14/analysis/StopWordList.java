@@ -551,8 +551,7 @@ public class StopWordList {
 	 public boolean is(String word) {
 		    return words.contains(word.toLowerCase());
 	 }
-
-
+	 
 	public static StopWordList getInstance() {
 
 		if (_instance == null) {

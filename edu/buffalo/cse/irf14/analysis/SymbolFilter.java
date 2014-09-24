@@ -27,9 +27,6 @@ public class SymbolFilter extends TokenFilter {
 	String currentString;
 	
 	
-	private static final Pattern UNDESIRABLES = Pattern.compile("[,.;!?]+$");
-	private static final Pattern APOSTROPHE = Pattern.compile("(?:'|'s)$");
-	
 	public SymbolFilter(TokenStream stream) {
 		super(stream);
 		_input = stream;
@@ -63,8 +60,40 @@ public class SymbolFilter extends TokenFilter {
 
 	//remove punctuation
 	public void step1(){
+		
 		if(currentString != null && !currentString.isEmpty()){
-			currentString = UNDESIRABLES.matcher(currentString).replaceAll("");
+			//currentString = UNDESIRABLES.matcher(currentString).replaceAll("");
+			
+			char[] charBuff = currentString.toCharArray();	
+			boolean doloop = true;
+			int i = charBuff.length - 1;
+			
+			while(doloop){
+				
+				//check for cases
+				if(charBuff[i] == '?' || charBuff[i] == '!' ||
+					charBuff[i] == '.' || charBuff[i] == ',' 
+					|| charBuff[i] == ';'){
+					
+					i--;
+										
+				}else{
+					doloop = false;
+				}
+				
+				if(i < 0){
+					break;
+				}
+				
+			}
+			
+			//cut off 
+			if(i >= 0 && i < charBuff.length - 1){
+				char[] newBuffer = new char[i + 1];
+				System.arraycopy(charBuff, 0, newBuffer, 0, i + 1);
+				currentString = String.valueOf(newBuffer);
+			}
+			
 		}
 	}
 	
@@ -72,7 +101,16 @@ public class SymbolFilter extends TokenFilter {
 	//remove trailing 's | s' | '
 	public void step3(){
 		if(currentString != null && !currentString.isEmpty()){
-			currentString = APOSTROPHE.matcher(currentString).replaceAll("");
+			
+			if(currentString.endsWith("'s")){
+				currentString = currentString.substring(0, currentString.length() - 2);
+			}
+			
+			if(currentString.endsWith("'")){
+				currentString = currentString.substring(0, currentString.length() - 1);
+			}
+			
+			
 		}
 	}
 	

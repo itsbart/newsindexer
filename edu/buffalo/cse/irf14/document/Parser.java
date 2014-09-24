@@ -59,15 +59,17 @@ public class Parser {
 				document.setField(FieldNames.NEWSDATE, date);
 				document.setField(FieldNames.CONTENT, content);
 				
+				//System.out.println("TITLE: " + title);
+				//System.out.println("DATE: " + date);
 				
 				//Authors
 				HashMap<FieldNames, String[]> authorData  = getAuthorData(linesFromDocument);	
 				if(authorData != null){
 					if(authorData.get(FieldNames.AUTHOR) != null){
 						document.setField(FieldNames.AUTHOR, authorData.get(FieldNames.AUTHOR));
-						for(String input : authorData.get(FieldNames.AUTHOR)){
-							System.out.println(category+ "\\" + fileId + " NAME: " + input);
-						}
+						//for(String input : authorData.get(FieldNames.AUTHOR)){
+							//System.out.println(category+ "\\" + fileId + " NAME: " + input);
+						//}
 					}
 					if(authorData.get(FieldNames.AUTHORORG) != null){
 						document.setField(FieldNames.AUTHORORG, authorData.get(FieldNames.AUTHORORG));
