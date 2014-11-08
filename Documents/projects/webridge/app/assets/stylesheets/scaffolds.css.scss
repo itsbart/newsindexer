@@ -1,0 +1,16 @@
+.question {
+  border-bottom: solid 1px #CCC;
+  padding: 5px 0;
+}
+
+.question p {
+  margin: 4px 0;
+}
+
+.question .admin {
+  display: none;
+}
+
+.question:hover .admin{
+  display:inline; 
+}
