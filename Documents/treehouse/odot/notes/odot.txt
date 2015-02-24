@@ -1,0 +1,38 @@
+Each particular piece of code that we generate from the controller will get a helper. Helpers are used to help generate code for our views. Controller code is used for behavior for our controller. 
+
+Mailers are made for different mailers. Each todolist mailer goes to the mailer. keep files are used for version control.
+
+Models will contain the models. 
+
+Concerns shared behavior between models. 
+
+Views is just where you html.erb are. 
+
+<%= calls a helper which evaluates some code %>
+
+Inside the bin directory are commands that are specific to our application i.e. rails new, rails generate
+
+config directory contains configurations such as routes, where we tell our applicaton where different parts go. 
+
+config/database.yml contains the database configuration for each environment. It tells rails what kind of database we are using. The default in this case is sqlite3. our database which is in the db folder is development.sqlite3. When we check this folder we find that it is empty because we didn't generate it yet. 
+
+config/application.rb the application configuration that is application code. This is for global settings in our application. we can have add to load_path, time_zones, etc.  
+
+If we want speicfic settings for plugins we put them in the initializer.
+
+Environment are for different locations such as test, production, development. 
+
+config/locales directory is for translation where we use for translating things.
+
+lib is where library code for our application. i.e. if we wrote our own time library we put it in here.
+lib/tasks has tasks for rake tasks.
+
+test is for testing
+
+public directory has all the default files for standard pages i.e. 404, etc.
+
+If you use the asset pipeline in the app/assets
+
+test directory, we are going to be using rspec for testing. 
+
+
